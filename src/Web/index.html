@@ -1,0 +1,450 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Web Audio Controller</title>
+    <script src="scripts/jquery-1.6.4.js"></script>
+    <script type="text/javascript">
+
+        var voicePlaylists = new Array;
+        var voiceFiles = new Array;
+        var audioPlaylists = new Array;
+        var audioFiles = new Array;
+
+        function openTab(evt, cityName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(cityName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        function playWhiteNoise() {
+            playNoise('whitenoise');
+        }
+
+        function playPinkNoise() {
+            playNoise('pinknoise');
+        }
+
+        function playNoise(noiseType) {
+            var apiPath = "api/noise/" + noiseType;
+            $.ajax({
+                url: apiPath,
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (result) {
+                    $("#status").html(result);
+                }
+            });
+            $.ajax({
+                url: apiPath,
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (result) {
+                    $("#status").html(result);
+                }
+            })
+        }
+
+        function getVoicePlaylists() {
+            var x = document.getElementById("voicePlaylist_list");
+            $.ajax({
+                url: "api/playbacks",
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (result) {
+                    result.forEach(function (item) {
+                        if (!voicePlaylists.includes(item)) {
+                            voicePlaylists.push(item);
+                            var option = document.createElement("option");
+                            option.text = item;
+                            option.id = "voicePlaylist";
+                            option.value = item;
+                            x.add(option);
+                        }
+                    });
+                },
+                complete: function () {
+                    changeVoicePlaylist()
+                }
+            });
+        }
+
+        function changeVoicePlaylist() {
+            var x = document.getElementById("voicePlaylist_list").value;
+            var voiceFileList = document.getElementById("voiceFiles");
+            var apiPath = "api/playbacks/" + x;
+            $.ajax({
+                url: apiPath,
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (result) {
+                    voiceFiles = new Array;
+                    $('.voiceFilePlay').remove();
+                    result.forEach(function (item) {
+                        voiceFiles.push(item);
+                        var fileDiv = document.createElement("div");
+                        fileDiv.innerText = item;
+                        fileDiv.id = "voiceFilePlay";
+                        fileDiv.className = "voiceFilePlay"
+                        fileDiv.addEventListener("click", playVoiceFile, false);
+                        //fileDiv.onclick = playVoiceFile(item);
+                        voiceFileList.appendChild(fileDiv);
+                    });
+                }
+            });
+        }
+
+        var playVoiceFile = function playVoiceFile(sender) {
+            var x = document.getElementById("voicePlaylist_list").value;
+            var apiPath = "api/playbacks/" + x + "/songs/" + sender.toElement.innerText;
+            $.ajax({
+                url: apiPath,
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (result) {
+                    $("#status").html(result);
+                }
+            })
+        }
+
+        function getAudioPlaylists() {
+            var x = document.getElementById("audioPlaylist_list");
+            $.ajax({
+                url: "api/audio",
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (result) {
+                    result.forEach(function (item) {
+                        if (!audioPlaylists.includes(item)) {
+                            audioPlaylists.push(item);
+                            var option = document.createElement("option");
+                            option.text = item;
+                            option.id = "audioPlaylist";
+                            option.value = item;
+                            x.add(option);
+                        }
+                    });
+                },
+                complete: function () {
+                    changeAudioPlaylist()
+                }
+            });
+        }
+
+        function changeAudioPlaylist() {
+            var x = document.getElementById("audioPlaylist_list").value;
+            var audioFileList = document.getElementById("audioFiles");
+            var apiPath = "api/audio/" + x;
+            $.ajax({
+                url: apiPath,
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (result) {
+                    audioFiles = new Array;
+                    $('.audioFilePlay').remove();
+                    result.forEach(function (item) {
+                        audioFiles.push(item);
+                        var fileDiv = document.createElement("div");
+                        fileDiv.innerText = item;
+                        fileDiv.id = "audioFilePlay";
+                        fileDiv.className = "audioFilePlay"
+                        fileDiv.addEventListener("click", playAudioFile, false);
+                        //fileDiv.onclick = playaudioFile(item);
+                        audioFileList.appendChild(fileDiv);
+                    });
+                }
+            });
+        }
+
+        var playAudioFile = function playAudioFile(sender) {
+            var x = document.getElementById("audioPlaylist_list").value;
+            var apiPath = "api/audio/" + x + "/songs/" + sender.toElement.innerText;
+            $.ajax({
+                url: apiPath,
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (result) {
+                    $("#status").html(result);
+                }
+            })
+        }
+
+        function updateStatus() {
+            $.ajax({
+                url: "api/master/status",
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (result) {
+                    $("#status").html(result);
+                }
+            })
+            setTimeout(updateStatus, 1000);
+        }
+
+        function handleTalk(audioFiles) {
+            var formData = new FormData();
+            formData.append("music", audioFiles[0])
+
+            $.ajax({
+                url: "api/talk",
+                type: "POST",
+                processData: false,
+                contentType: false,
+                //dataType: "false",
+                data: formData
+                //error: function (jqXHR, status, error) {
+                //    console.log(error, this);
+                //},
+                //success: function (data) {
+                //    alert('success');
+                //    return false;
+                //}
+            })
+        }
+
+        $(document).ready(function () {
+
+            var talkInput = document.getElementById("talkInput"),
+                talkButton = document.getElementById("talkButton");
+
+            talkButton.addEventListener("click", function (e) {
+                if (talkInput) {
+                    talkInput.click();
+                }
+            }, false);
+
+            statusTimer = setTimeout(updateStatus(), 1000);
+
+            $("#stopButton").click(function () {
+                $.ajax({
+                    url: "api/master/stop",
+                    contentType: "application/json",
+                    dataType: 'json',
+                    success: function (result) {
+                        $("#status").html(result);
+                    }
+                })
+            });
+
+            $("#muteButton").click(function () {
+                $.ajax({
+                    url: "api/master/volume/mute",
+                    contentType: "application/json",
+                    dataType: 'json',
+                    success: function (result) {
+                        $("#status").html(result);
+                    }
+                })
+            });
+
+            getVoicePlaylists();
+            getAudioPlaylists();
+        });
+
+    </script>
+    <style>
+        body {
+            width: 900px;
+            height: 100%;
+        }
+
+        /* Style the tab */
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+            /* Style the buttons that are used to open the tab content */
+            .tab button {
+                font-size: 60px;
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+            }
+
+                /* Change background color of buttons on hover */
+                .tab button:hover {
+                    background-color: #ddd;
+                }
+
+                /* Create an active/current tablink class */
+                .tab button.active {
+                    background-color: #ccc;
+                }
+
+        /* Style the tab content */
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
+        #audioFilePlay {
+            font-size: 40px;
+            margin: 3px;
+            padding: 6px;
+            border: 2px solid #808080;
+        }
+
+        #audioFilePlay:active {
+            font-size: 40px;
+            margin: 3px;
+            padding: 6px;
+            border: 2px solid #808080;
+            background-color: dimgrey;
+        }
+
+        #voiceFilePlay {
+            font-size: 40px;
+            margin: 3px;
+            padding: 6px;
+            border: 2px solid #808080;
+        }
+
+        #voiceFilePlay:active {
+            font-size: 40px;
+            margin: 3px;
+            padding: 6px;
+            border: 2px solid #808080;
+            background-color: dimgrey;
+        }
+
+        #refreshButton {
+            font-size: 50px;
+            margin: 10px;
+            padding: 3px;
+            border: 2px solid #808080;
+        }
+
+        #refreshButton:active {
+            font-size: 50px;
+            margin: 10px;
+            padding: 3px;
+            border: 2px solid #808080;
+            background-color: dimgrey;
+        }
+
+        #noiseButton {
+            font-size: 50px;
+            margin: 3px;
+            padding: 3px;
+            border: 2px solid #808080;
+        }
+
+        #noiseButton:active {
+            font-size: 50px;
+            margin: 3px;
+            padding: 3px;
+            border: 2px solid #808080;
+            background-color: dimgrey;
+        }
+
+        .topButtons {
+            padding: 10px;
+            margin: 20px;
+            font-size: 50px;
+        }
+
+        .selectList {
+            font-size: 40px;
+        }
+        
+        .modeDescription {
+            font-size: 30px;
+        }
+
+        #status {
+            font-size: 70px;
+            border: 2px solid #808080;
+        }
+
+        #talkButton {
+            font-size: 70px;
+            border: 2px solid #808080;
+        }
+
+        #talkButton:active {
+            font-size: 70px;
+            border: 2px solid #808080;
+            background-color: dimgrey;
+        }
+    </style>
+</head>
+<body>
+    <marquee id="status"></marquee>
+    <br />
+    <span>
+        <button class="topButtons" id="stopButton">STOP</button>
+    </span>
+    <span>
+        <button class="topButtons" id="muteButton">MUTE</button>
+    </span>
+    <br />
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Noise')">Noise</button>
+        <button class="tablinks" onclick="openTab(event, 'Audio')">Audio</button>
+        <button class="tablinks" onclick="openTab(event, 'Voice')">Voice</button>
+        <button class="tablinks" onclick="openTab(event, 'Talk')">Talk</button>
+    </div>
+
+    <!-- Tab content -->
+    <div id="Noise" class="tabcontent">
+        <h1>Noise</h1>
+        <p class="modeDescription">Play generated noise</p>
+        <div id="noiseButton" onclick="playWhiteNoise()">White Noise</div>
+        <div id="noiseButton" onclick="playPinkNoise()">Pink Noise</div>
+    </div>
+
+    <div id="Audio" class="tabcontent">
+        <h1>Audio</h1>
+        <p class="modeDescription">Play Audio files</p>
+        <div id="refreshButton" onclick="getAudioPlaylists()">Refresh</div>
+        <SELECT class="selectList" id="audioPlaylist_list" onchange="changeAudioPlaylist()">
+        </SELECT>
+        <div>-</div>
+        <div id="audioFiles">
+        </div>
+    </div>
+
+    <div id="Voice" class="tabcontent">
+        <h1>Voice Playback</h1>
+        <p class="modeDescription">Play recorded voice snippets</p>
+        <div id="refreshButton" onclick="getVoicePlaylists()">Refresh</div>
+        <SELECT class="selectList" id="voicePlaylist_list" onchange="changeVoicePlaylist()">
+        </SELECT>
+        <div>-</div>
+        <div id="voiceFiles">
+        </div>
+    </div>
+
+    <div id="Talk" class="tabcontent">
+        <h1>Direct Audio</h1>
+        <p class="modeDescription">Talk directly to the audio stream</p>
+        <div>-</div>
+        <input id="talkInput" type="file" accept="audio/*" hidden="hidden" onchange="handleTalk(this.files)" capture />
+        <button id="talkButton">TALK</button>
+    </div>
+</body>
+</html>
