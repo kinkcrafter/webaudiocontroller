@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
@@ -10,6 +10,23 @@
         var voiceFiles = new Array;
         var audioPlaylists = new Array;
         var audioFiles = new Array;
+
+        function darkmodeToggle() {
+            var element = document.body;
+            var tabs = document.getElementsByClassName("tab");
+            for (i = 0; i < tabs.length; i++) {
+                tabs[i].classList.toggle("dark-mode");
+            }
+            var buttons = document.getElementsByTagName("button");
+            for (i = 0; i < buttons.length; i++) {
+                buttons[i].classList.toggle("dark-mode");
+            }
+            var selectors = document.getElementsByClassName("selectList");
+            for (i = 0; i < selectors.length; i++) {
+                selectors[i].classList.toggle("dark-mode");
+            }
+            element.classList.toggle("dark-mode");
+        }
 
         function openTab(evt, cityName) {
             // Declare all variables
@@ -263,6 +280,11 @@
             height: 100%;
         }
 
+        .dark-mode {
+            background-color: black !important;
+            color: lightgrey !important;
+        }
+
         /* Style the tab */
         .tab {
             overflow: hidden;
@@ -289,7 +311,11 @@
 
                 /* Create an active/current tablink class */
                 .tab button.active {
-                    background-color: #ccc;
+                    background-color: #ccc !important;
+                }
+
+                .tab button.active.dark-mode {
+                    background-color: #808080 !important;
                 }
 
         /* Style the tab content */
@@ -312,7 +338,7 @@
             margin: 3px;
             padding: 6px;
             border: 2px solid #808080;
-            background-color: dimgrey;
+            background-color: dimgrey 
         }
 
         #voiceFilePlay {
@@ -366,8 +392,21 @@
             font-size: 50px;
         }
 
+        .topButtons.dark-mode {
+            padding: 10px;
+            margin: 20px;
+            font-size: 50px;
+            border-color: gray;
+            border-width:3px;
+        }
+
         .selectList {
             font-size: 40px;
+        }
+
+        .selectList.dark-mode {
+            background-color: #3b3b3b !important;
+            color: #ddd !important;
         }
         
         .modeDescription {
@@ -389,6 +428,74 @@
             border: 2px solid #808080;
             background-color: dimgrey;
         }
+
+        /* The switch - the box around the slider */
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 120px;
+          height: 68px;
+        }
+        
+        /* Hide default HTML checkbox */
+        .switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        
+        /* The slider */
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          -webkit-transition: .6s;
+          transition: .6s;
+        }
+        
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 52px;
+          width: 52px;
+          left: 8px;
+          bottom: 8px;
+          background-color: white;
+          -webkit-transition: .6s;
+          transition: .6s;
+        }
+        
+        input:checked + .slider {
+          background-color: #2196F3;
+        }
+        
+        input:focus + .slider {
+          box-shadow: 0 0 2px #2196F3;
+        }
+        
+        input:checked + .slider:before {
+          -webkit-transform: translateX(52px);
+          -ms-transform: translateX(52px);
+          transform: translateX(52px);
+        }
+        
+        /* Rounded sliders */
+        .slider.round {
+          border-radius: 68px;
+        }
+        
+        .slider.round:before {
+          border-radius: 50%;
+        }
+
+        .sliderHolder {
+            vertical-align: text-bottom;
+            font-size: 40px
+        }
     </style>
 </head>
 <body>
@@ -400,6 +507,13 @@
     <span>
         <button class="topButtons" id="muteButton">MUTE</button>
     </span>
+    <span class="sliderHolder">
+        DARK Mode <label class="switch">
+            <input type="checkbox" onclick="darkmodeToggle()">
+            <span class="slider round"></span>
+        </label>
+    </span>
+
     <br />
 
     <div class="tab">
