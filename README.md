@@ -5,6 +5,13 @@
 # Web Audio Controller
 Control Audio Feeds over LAN via browser; runs as a C# embedded Windows Forms App.  This code is AS-IS.  I will entertain PRs and issues, so feel free to contribute!
 
+## Release notes
+- The Dec2020 release has significantly improved the clone to build story and fixed many dependency issues that folks were experiencing.
+- Text-to-Speech has been added!  Type in your commands via the webapp and speak away!
+  - You can install new language with this process [Install new languages](https://support.microsoft.com/en-us/office/how-to-download-text-to-speech-languages-for-windows-10-d5a6b612-b3ae-423f-afa5-4f6caf1ec5d3#:~:text=Install%20a%20new%20Text-to-Speech%20language%20in%20Windows%2010.,installed%20when%20your%20machine%20turns%20back%20on.%20)
+  - Pick your language on the server's GUI, it has a dropdown in the "voice and noice" pane.
+  - Sending text commands will save the text in your browser session only, you can click and repeat them but they will clear if you reload your browser.
+
 ## Acks
 
 This service borrows heavily from [NAudio](https://github.com/naudio/NAudio), a C# library that allows code to interact with audio APIs in windows.
