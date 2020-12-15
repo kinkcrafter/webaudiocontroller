@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Speech.Synthesis;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,6 +15,8 @@ namespace WebAudioController
     {
         internal static NAudioHandler audioHandler;
 
+        internal static SpeechSynthesizer speaker;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -22,6 +25,8 @@ namespace WebAudioController
         {
             /// Boot up our core audio handler
             audioHandler = new NAudioHandler();
+
+            speaker = new SpeechSynthesizer();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

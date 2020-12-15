@@ -32,6 +32,7 @@
             this.textBoxStatus = new System.Windows.Forms.TextBox();
             this.linkLabelWebService = new System.Windows.Forms.LinkLabel();
             this.groupBoxVoiceNoise = new System.Windows.Forms.GroupBox();
+            this.buttonRecording = new System.Windows.Forms.Button();
             this.buttonPlaylistRemoveFile = new System.Windows.Forms.Button();
             this.buttonPlaylistAddFile = new System.Windows.Forms.Button();
             this.buttonPlaylistMoveToBottom = new System.Windows.Forms.Button();
@@ -61,7 +62,7 @@
             this.buttonLoadProfile = new System.Windows.Forms.Button();
             this.buttonDeleteProfile = new System.Windows.Forms.Button();
             this.timerStatusUpdater = new System.Windows.Forms.Timer(this.components);
-            this.buttonRecording = new System.Windows.Forms.Button();
+            this.voicesCmBox = new System.Windows.Forms.ComboBox();
             this.groupBoxVoiceNoise.SuspendLayout();
             this.groupBoxAudio.SuspendLayout();
             this.SuspendLayout();
@@ -73,7 +74,7 @@
             this.textBoxStatus.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxStatus.Name = "textBoxStatus";
             this.textBoxStatus.ReadOnly = true;
-            this.textBoxStatus.Size = new System.Drawing.Size(1269, 53);
+            this.textBoxStatus.Size = new System.Drawing.Size(1269, 98);
             this.textBoxStatus.TabIndex = 0;
             this.textBoxStatus.Text = "Starting Service...";
             this.textBoxStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -85,7 +86,7 @@
             this.linkLabelWebService.Location = new System.Drawing.Point(4, 68);
             this.linkLabelWebService.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.linkLabelWebService.Name = "linkLabelWebService";
-            this.linkLabelWebService.Size = new System.Drawing.Size(240, 31);
+            this.linkLabelWebService.Size = new System.Drawing.Size(479, 63);
             this.linkLabelWebService.TabIndex = 1;
             this.linkLabelWebService.TabStop = true;
             this.linkLabelWebService.Text = "Open Web Service";
@@ -93,6 +94,7 @@
             // 
             // groupBoxVoiceNoise
             // 
+            this.groupBoxVoiceNoise.Controls.Add(this.voicesCmBox);
             this.groupBoxVoiceNoise.Controls.Add(this.buttonRecording);
             this.groupBoxVoiceNoise.Controls.Add(this.buttonPlaylistRemoveFile);
             this.groupBoxVoiceNoise.Controls.Add(this.buttonPlaylistAddFile);
@@ -114,6 +116,16 @@
             this.groupBoxVoiceNoise.TabIndex = 2;
             this.groupBoxVoiceNoise.TabStop = false;
             this.groupBoxVoiceNoise.Text = "Voice and Noise";
+            // 
+            // buttonRecording
+            // 
+            this.buttonRecording.Location = new System.Drawing.Point(496, 39);
+            this.buttonRecording.Name = "buttonRecording";
+            this.buttonRecording.Size = new System.Drawing.Size(124, 35);
+            this.buttonRecording.TabIndex = 20;
+            this.buttonRecording.Text = "Recording";
+            this.buttonRecording.UseVisualStyleBackColor = true;
+            this.buttonRecording.Click += new System.EventHandler(this.buttonRecording_Click);
             // 
             // buttonPlaylistRemoveFile
             // 
@@ -179,10 +191,10 @@
             // 
             this.listBoxPlaylistFiles.DisplayMember = "DisplayName";
             this.listBoxPlaylistFiles.FormattingEnabled = true;
-            this.listBoxPlaylistFiles.ItemHeight = 25;
+            this.listBoxPlaylistFiles.ItemHeight = 46;
             this.listBoxPlaylistFiles.Location = new System.Drawing.Point(13, 127);
             this.listBoxPlaylistFiles.Name = "listBoxPlaylistFiles";
-            this.listBoxPlaylistFiles.Size = new System.Drawing.Size(525, 704);
+            this.listBoxPlaylistFiles.Size = new System.Drawing.Size(525, 694);
             this.listBoxPlaylistFiles.TabIndex = 13;
             this.listBoxPlaylistFiles.SelectedIndexChanged += new System.EventHandler(this.listBoxPlaylistFiles_SelectedIndexChanged);
             // 
@@ -202,7 +214,7 @@
             this.comboBoxPlaybackPlaylists.Location = new System.Drawing.Point(13, 39);
             this.comboBoxPlaybackPlaylists.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxPlaybackPlaylists.Name = "comboBoxPlaybackPlaylists";
-            this.comboBoxPlaybackPlaylists.Size = new System.Drawing.Size(302, 33);
+            this.comboBoxPlaybackPlaylists.Size = new System.Drawing.Size(302, 54);
             this.comboBoxPlaybackPlaylists.TabIndex = 0;
             this.comboBoxPlaybackPlaylists.SelectedIndexChanged += new System.EventHandler(this.comboBoxPlaybackPlaylists_SelectedIndexChanged);
             // 
@@ -221,7 +233,7 @@
             // 
             this.textBoxNewPlaybackPlaylistName.Location = new System.Drawing.Point(13, 77);
             this.textBoxNewPlaybackPlaylistName.Name = "textBoxNewPlaybackPlaylistName";
-            this.textBoxNewPlaybackPlaylistName.Size = new System.Drawing.Size(302, 30);
+            this.textBoxNewPlaybackPlaylistName.Size = new System.Drawing.Size(302, 53);
             this.textBoxNewPlaybackPlaylistName.TabIndex = 10;
             this.textBoxNewPlaybackPlaylistName.TextChanged += new System.EventHandler(this.textBoxNewPlaybackPlaylistName_TextChanged);
             // 
@@ -262,10 +274,10 @@
             // 
             this.listBoxAudioFiles.DisplayMember = "DisplayName";
             this.listBoxAudioFiles.FormattingEnabled = true;
-            this.listBoxAudioFiles.ItemHeight = 25;
+            this.listBoxAudioFiles.ItemHeight = 46;
             this.listBoxAudioFiles.Location = new System.Drawing.Point(11, 127);
             this.listBoxAudioFiles.Name = "listBoxAudioFiles";
-            this.listBoxAudioFiles.Size = new System.Drawing.Size(525, 704);
+            this.listBoxAudioFiles.Size = new System.Drawing.Size(525, 694);
             this.listBoxAudioFiles.TabIndex = 14;
             this.listBoxAudioFiles.SelectedIndexChanged += new System.EventHandler(this.listBoxAudioFiles_SelectedIndexChanged);
             // 
@@ -305,7 +317,7 @@
             this.comboBoxAudioPlaylists.Location = new System.Drawing.Point(11, 37);
             this.comboBoxAudioPlaylists.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxAudioPlaylists.Name = "comboBoxAudioPlaylists";
-            this.comboBoxAudioPlaylists.Size = new System.Drawing.Size(302, 33);
+            this.comboBoxAudioPlaylists.Size = new System.Drawing.Size(302, 54);
             this.comboBoxAudioPlaylists.TabIndex = 13;
             this.comboBoxAudioPlaylists.SelectedIndexChanged += new System.EventHandler(this.comboBoxAudioPlaylists_SelectedIndexChanged);
             // 
@@ -323,7 +335,7 @@
             // 
             this.textBoxNewAudioPlaylistName.Location = new System.Drawing.Point(11, 75);
             this.textBoxNewAudioPlaylistName.Name = "textBoxNewAudioPlaylistName";
-            this.textBoxNewAudioPlaylistName.Size = new System.Drawing.Size(302, 30);
+            this.textBoxNewAudioPlaylistName.Size = new System.Drawing.Size(302, 53);
             this.textBoxNewAudioPlaylistName.TabIndex = 15;
             this.textBoxNewAudioPlaylistName.TextChanged += new System.EventHandler(this.textBoxNewAudioPlaylistName_TextChanged);
             // 
@@ -364,7 +376,7 @@
             this.comboBoxSelectProfile.Location = new System.Drawing.Point(269, 74);
             this.comboBoxSelectProfile.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxSelectProfile.Name = "comboBoxSelectProfile";
-            this.comboBoxSelectProfile.Size = new System.Drawing.Size(277, 33);
+            this.comboBoxSelectProfile.Size = new System.Drawing.Size(277, 54);
             this.comboBoxSelectProfile.TabIndex = 4;
             this.comboBoxSelectProfile.SelectedIndexChanged += new System.EventHandler(this.comboBoxSelectProfile_SelectedIndexChanged);
             // 
@@ -383,7 +395,7 @@
             // 
             this.textBoxNewProfileName.Location = new System.Drawing.Point(848, 74);
             this.textBoxNewProfileName.Name = "textBoxNewProfileName";
-            this.textBoxNewProfileName.Size = new System.Drawing.Size(258, 30);
+            this.textBoxNewProfileName.Size = new System.Drawing.Size(258, 53);
             this.textBoxNewProfileName.TabIndex = 6;
             this.textBoxNewProfileName.TextChanged += new System.EventHandler(this.textBoxNewProfileName_TextChanged);
             // 
@@ -413,19 +425,18 @@
             this.timerStatusUpdater.Interval = 250;
             this.timerStatusUpdater.Tick += new System.EventHandler(this.timerStatusUpdater_Tick);
             // 
-            // buttonRecording
+            // voicesCmBox
             // 
-            this.buttonRecording.Location = new System.Drawing.Point(496, 39);
-            this.buttonRecording.Name = "buttonRecording";
-            this.buttonRecording.Size = new System.Drawing.Size(124, 35);
-            this.buttonRecording.TabIndex = 20;
-            this.buttonRecording.Text = "Recording";
-            this.buttonRecording.UseVisualStyleBackColor = true;
-            this.buttonRecording.Click += new System.EventHandler(this.buttonRecording_Click);
+            this.voicesCmBox.FormattingEnabled = true;
+            this.voicesCmBox.Location = new System.Drawing.Point(498, 80);
+            this.voicesCmBox.Name = "voicesCmBox";
+            this.voicesCmBox.Size = new System.Drawing.Size(121, 54);
+            this.voicesCmBox.TabIndex = 21;
+            this.voicesCmBox.SelectedIndexChanged += new System.EventHandler(this.voicesCmBox_SelectedIndexChanged);
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(23F, 46F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1282, 986);
             this.Controls.Add(this.buttonDeleteProfile);
@@ -486,6 +497,7 @@
         private System.Windows.Forms.Button buttonAudioMoveToTop;
         private System.Windows.Forms.Timer timerStatusUpdater;
         private System.Windows.Forms.Button buttonRecording;
+        private System.Windows.Forms.ComboBox voicesCmBox;
     }
 }
 

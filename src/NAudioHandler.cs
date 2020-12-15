@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Speech.Synthesis;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -26,6 +28,8 @@ namespace WebAudioController
         public bool muted = false;
         private bool busy = false;
         public bool liveVoice = false;
+        public bool texttospeech = false;
+        public string currentTTS = "";
 
         private string audioPlaylist = string.Empty;
         private string playbackPlaylist = string.Empty;
@@ -35,7 +39,7 @@ namespace WebAudioController
 
         public OutputMode currentOutputMode = OutputMode.stopped;
         private OutputMode nextOutputMode = OutputMode.stopped;
-        
+
         // Signal Generators
         // todo: more generators if possible...
         #region Signal Generators
@@ -67,7 +71,7 @@ namespace WebAudioController
 
         public string ProcessCommand(AudioCommand command, string argument1 = "", string argument2 = "")
         {
-            if(muted && command != AudioCommand.Mute)
+            if (muted && command != AudioCommand.Mute)
             {
                 return "Muted";
             }
@@ -134,6 +138,14 @@ namespace WebAudioController
                         }
                         return SetAudioMode(argument1);
                     }
+                case AudioCommand.TTS:
+                    {
+                        if (busy)
+                        {
+                            return $"Busy {MainForm.StatusText}";
+                        }
+                        return PlayTTS(argument1);
+                    }
                 default:
                     break;
             }
@@ -194,7 +206,7 @@ namespace WebAudioController
                 return "Playing";
             }
 
-            return "Could not find"; 
+            return "Could not find";
         }
 
         private string PlayLiveVoice(string filePath)
@@ -262,10 +274,60 @@ namespace WebAudioController
 
         }
 
+        private string PlayTTS(string text)
+        {
+            Service.speaker.Volume = 100;  // 0...100
+            Service.speaker.Rate = -2;     // -10...10
+
+            texttospeech = true;
+            currentTTS = text;
+            FadeOutSound();
+
+            MainForm.StatusText = $"Saying {text}";
+
+            if (currentOutputMode != OutputMode.stopped)
+            {
+                Thread.Sleep(2500);
+            }
+
+            Service.speaker.Speak(text);
+
+            while (Service.speaker.State == SynthesizerState.Speaking)
+            {
+                Thread.Sleep(100); 
+            }
+
+            voiceOut_PlaybackStopped(null, null);
+
+            //if (currentOutputMode != OutputMode.stopped)
+            //{
+            //    if (muted)
+            //    {
+            //        Service.speaker.Speak(text);
+            //    }
+            //    else
+            //    {
+            //        //ToggleMute();
+            //        Thread.Sleep(1000);
+            //        Service.speaker.Speak(text);
+            //        Thread.Sleep(1000);
+            //        //ToggleMute();
+            //    }
+            //}
+            //else
+            //{
+            //    Service.speaker.Speak(text);
+            //}
+
+                return "Saying";
+        }
+
         // Basically continue playing whatever
         private void voiceOut_PlaybackStopped(object sender, StoppedEventArgs e)
         {
             liveVoice = false;
+
+            texttospeech = false;
 
             busy = false;
 
@@ -284,9 +346,9 @@ namespace WebAudioController
 
             if (muted)
             {
-                if(audioOutSampler != null)
-                    audioOutSampler.Volume = 0;
-                if(voiceReplaySampler != null)
+                if (audioOutSampler != null)
+                    //audioOutSampler.Volume = 0;
+                if (voiceReplaySampler != null)
                     voiceReplaySampler.Volume = 0;
                 noiseOut.Volume = 0;
 
@@ -317,8 +379,8 @@ namespace WebAudioController
 
         int audioFadeOutSteps = 0;
         int audioFadeInSteps = 0;
-        Timer timerFadeOut = new Timer();
-        Timer timerFadeIn = new Timer();
+        System.Timers.Timer timerFadeOut = new System.Timers.Timer();
+        System.Timers.Timer timerFadeIn = new System.Timers.Timer();
 
         private void FadeOutSound()
         {
@@ -346,7 +408,7 @@ namespace WebAudioController
 
         private void FadeInSound()
         {
-            if (liveVoice)
+            if (liveVoice || texttospeech)
                 return;
 
             currentOutputMode = nextOutputMode;
@@ -384,6 +446,7 @@ namespace WebAudioController
                     }
                 default:
                     {
+                        busy = false;
                         break;
                     }
             }
@@ -412,7 +475,7 @@ namespace WebAudioController
 
         private void PrepNextAudioType()
         {
-            if (liveVoice)
+            if (liveVoice || texttospeech)
             {
                 return;
             }
@@ -723,6 +786,7 @@ namespace WebAudioController
         PlayVoice,
         PlayLiveVoice,
         SetVolume,
-        SetAudioMode
+        SetAudioMode,
+        TTS
     }
 }

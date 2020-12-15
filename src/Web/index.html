@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
@@ -10,6 +10,7 @@
         var voiceFiles = new Array;
         var audioPlaylists = new Array;
         var audioFiles = new Array;
+        var texts = new Array;
 
         function darkmodeToggle() {
             var element = document.body;
@@ -213,7 +214,7 @@
             setTimeout(updateStatus, 1000);
         }
 
-        function handleTalk(audioFiles) {
+        function handleTalk() {
             var formData = new FormData();
             formData.append("music", audioFiles[0])
 
@@ -224,6 +225,53 @@
                 contentType: false,
                 //dataType: "false",
                 data: formData
+                //error: function (jqXHR, status, error) {
+                //    console.log(error, this);
+                //},
+                //success: function (data) {
+                //    alert('success');
+                //    return false;
+                //}
+            })
+        }
+
+        function sendText() {
+            var ttsarea = document.getElementById("ttsarea");
+
+            playText(ttsarea.value);
+        }
+
+        function sendPreviousText(sender) {
+            var text = sender.toElement.innerText
+
+            playText(text);
+        }
+
+        function playText(textValue) {
+            var textList = document.getElementById("textList");
+
+            if (!texts.includes(textValue)) {
+                texts.push(textValue)
+                var textDiv = document.createElement("div");
+                textDiv.innerText = textValue;
+                textDiv.id = "textSend";
+                textDiv.className = "textSend"
+                textDiv.addEventListener("click", sendPreviousText, false);
+                //textDiv.onclick(playText(textValue));
+                textList.appendChild(textDiv);
+            }
+
+            postText(textValue);
+        }
+
+        function postText(text) {
+            $.ajax({
+                url: "api/tts",
+                type: "POST",
+                processData: false,
+                contentType: false,
+                //dataType: "false",
+                data: text
                 //error: function (jqXHR, status, error) {
                 //    console.log(error, this);
                 //},
@@ -470,7 +518,7 @@
         }
         
         input:checked + .slider {
-          background-color: #2196F3;
+          background-color: #808080;
         }
         
         input:focus + .slider {
@@ -521,6 +569,7 @@
         <button class="tablinks" onclick="openTab(event, 'Audio')">Audio</button>
         <button class="tablinks" onclick="openTab(event, 'Voice')">Voice</button>
         <button class="tablinks" onclick="openTab(event, 'Talk')">Talk</button>
+        <button class="tablinks" onclick="openTab(event, 'Text')">Text</button>
     </div>
 
     <!-- Tab content -->
@@ -559,6 +608,15 @@
         <div>-</div>
         <input id="talkInput" type="file" accept="audio/*" hidden="hidden" onchange="handleTalk(this.files)" capture />
         <button id="talkButton">TALK</button>
+    </div>
+
+    <div id="Text" class="tabcontent">
+        <h1>Text to Speech</h1>
+        <p class="modeDescription">Text to the audio stream</p>
+        <div>-</div>
+        <textarea id="ttsarea"></textarea>
+        <button id="ttsButton" onclick="sendText()">SEND</button>
+        <div id="textList"></div>
     </div>
 </body>
 </html>

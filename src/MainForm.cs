@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Speech.Synthesis;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -41,6 +42,11 @@ namespace WebAudioController
             InitializeOwin();
             InitializePage();
 
+            foreach (InstalledVoice voice in Service.speaker.GetInstalledVoices())
+            {
+                voicesCmBox.Items.Add(voice.VoiceInfo.Name);
+            }
+
             RunFirst();
         }
 
@@ -55,6 +61,12 @@ namespace WebAudioController
             if (Service.audioHandler.liveVoice)
             {
                 StatusText = $"Playing {NAudioHandler.currentPlayback.DisplayName}";
+                return;
+            }
+
+            if (Service.audioHandler.texttospeech)
+            {
+                StatusText = $"Saying {Service.audioHandler.currentTTS}";
                 return;
             }
 
@@ -617,6 +629,11 @@ namespace WebAudioController
         {
             AudioRecordForm audioRecordingForm = new AudioRecordForm(recordedAudioFolder);
             audioRecordingForm.Show();
+        }
+
+        private void voicesCmBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Service.speaker.SelectVoice((string)voicesCmBox.SelectedItem);
         }
     }
 
